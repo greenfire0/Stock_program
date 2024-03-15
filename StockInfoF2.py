@@ -80,7 +80,7 @@ class StockInfoApp:
             self.display_info(filtered_info)
             self.display_finviz_info(finviz_info)
 
-            self.get_and_display_earnings_dates(ticker)
+            #self.get_and_display_earnings_dates(ticker)
 
             margin_info = self.calculate_margin(float(filtered_info.get('dayLow', '0').replace('$', '').replace(',', '')))
             self.display_margin_info(margin_info)
@@ -90,6 +90,7 @@ class StockInfoApp:
 
 
     def get_and_display_earnings_dates(self, ticker):
+
         url = f'https://www.sec.gov/cgi-bin/browse-edgar?type=10-&dateb=&owner=include&count=100&action=getcompany&CIK={ticker}'
         headerInfo = {'User-Agent': 'Mozilla/5.0'}
         try:
@@ -99,13 +100,17 @@ class StockInfoApp:
                 trElems = soup.select('tr')
                 dateFind = re.compile(r'2\d{3}-\d{2}-\d{2}')
                 dates = []
+                
 
                 for tr in trElems:
+
                     tdElems = tr.select('td')
                     if len(tdElems) == 5 and dateFind.search(tdElems[3].getText()) is not None:
                         date = tdElems[3].getText()
                         converted = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%Y')
                         dates.append(converted)
+                
+                        
 
                 if dates:
                     earnings_data = []
@@ -113,8 +118,9 @@ class StockInfoApp:
                         earnings_date = datetime.datetime.strptime(date, '%m/%d/%Y')
                         earnings_date_formatted = earnings_date.strftime('%Y-%m-%d')
                         try:
-                            # Adjust date range to cover entire earnings day
-                            earnings = yf.Ticker(ticker).history(start=earnings_date_formatted, end=earnings_date_formatted)
+                            print(earnings_date_formatted)
+                            earnings = yf.Ticker(ticker).history(start="2022-06-02", end="2022-06-03",interval="1h")
+                            print(earnings.head())
                             if not earnings.empty:
                                 premarket_low = earnings['Low'].min()
                                 premarket_high = earnings['High'].max()
@@ -145,18 +151,17 @@ class StockInfoApp:
         ]
         filtered_info = {key: self.format_value(key, info.get(key, 'N/A')) for key in desired_keys}
 
-        # Implement the short squeeze calculation based on the corrected formula
-        self.calculate_and_add_short_squeeze(filtered_info)
 
         return filtered_info
 
     def calculate_and_add_short_squeeze(self, info):
         try:
-            shares_short = int(info.get('sharesShort', 0))
-            float_shares = int(info.get('sharesOutstanding', 0))
+
+            shares_short = float(info.get('sharesShort', 0).replace(",", ""))
+            float_shares = float(info.get('sharesOutstanding', 0).replace(",", ""))
             if float_shares > shares_short > 0:
                 short_squeeze_percentage = (shares_short / (float_shares - shares_short)) * 100
-                info['shortSqueeze'] = f"{short_squeeze_percentage:.2f}%"
+                print(f"{short_squeeze_percentage:.2f}%")
             else:
                 info['shortSqueeze'] = "N/A"
         except Exception as e:
@@ -242,8 +247,14 @@ class StockInfoApp:
 
     def display_finviz_info(self, finviz_info):
         self.window['-FINVIZ-'].print("Finviz Data:")
+        max_key_length = max(len(key) for key in ['Market Cap', 'Short Float', 'Shs Float'])
         for key in ['Market Cap', 'Short Float', 'Shs Float']:
-            self.window['-FINVIZ-'].print(f"{key}: {finviz_info.get(key, 'N/A')}")
+            padding = max_key_length - len(key)
+            formatted_value = finviz_info.get(key, 'N/A')
+            formatted_line = f"{key}{' ' * padding}: {formatted_value}"
+            self.window['-FINVIZ-'].print(formatted_line, font=('Courier New', 11))
+
+
 
     def calculate_margin(self, lowest_price):
         if lowest_price > 16.67:
