@@ -26,25 +26,29 @@ class StockInfoApp:
              ]
         ], background_color=dark_theme_bg)
    
-        # Middle Left Frame
-        self.middle_left_frame = sg.Column([[sg.Multiline(size=(60, 20), key='-INFO-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.top_frame1 = sg.Column([[sg.Multiline(size=(40, 3), key='-f1-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.top_frame2 = sg.Column([[sg.Multiline(size=(42, 3), key='-f2-',pad=(8,0), background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.top_frame3 = sg.Column([[sg.Multiline(size=(40, 3), key='-f3-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
 
-        # Finviz Frame
-        self.finviz_frame = sg.Column([[sg.Multiline(size=(30, 20), key='-FINVIZ-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
 
-        # Placeholder Frame
-        self.placeholder_frame = sg.Column([[sg.Multiline(size=(30, 20), key='-PLACEHOLDER-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.middle_left_frame = sg.Column([[sg.Multiline(size=(40, 20), key='-INFO-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.finviz_frame = sg.Column([[sg.Multiline(size=(20, 20), key='-FINVIZ-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.finviz_frame2 = sg.Column([[sg.Multiline(size=(20, 20), key='-FINVIZ2-',pad=(0, 0), background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.placeholder_frame = sg.Column([[sg.Multiline(size=(40, 20), key='-PLACEHOLDER-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
 
         # Earnings Frame
-        self.earnings_frame = sg.Column([[sg.Multiline(size=(60, 10), key='-EARNINGS-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.earnings_frame = sg.Column([[sg.Multiline(size=(63, 10), key='-EARNINGS-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        self.earnings_frame2 = sg.Column([[sg.Multiline(size=(63, 10), key='-EARNINGS2-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, reroute_stdout=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
+        # Define the columns for the main layout
 
         self.layout = [
             [sg.Text('Stock Information', font=('Helvetica', 16), text_color='white', background_color=dark_theme_bg)],
             [self.ticker_frame],
             [sg.Input("",key='Input1',visible=False)],
             [sg.Input("",key='Input2',visible=False)],
-            [sg.Column([[self.middle_left_frame, self.finviz_frame, self.placeholder_frame]], element_justification='stretch')],
-            [self.earnings_frame]
+            [sg.Column([[self.top_frame1,self.top_frame2,self.top_frame3]], element_justification='stretch')],
+            [sg.Column([[self.middle_left_frame,self.finviz_frame,self.finviz_frame2, self.placeholder_frame]], element_justification='stretch')],
+            [sg.Column([[self.earnings_frame,self.earnings_frame2]], element_justification='stretch')]
        ]
 
         window_location = (0, 0)
