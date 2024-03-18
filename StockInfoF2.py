@@ -22,9 +22,10 @@ class StockInfoApp:
         self.ticker_frame = sg.Column([
             [sg.Text('Ticker:', text_color='white'), 
              sg.Input(key='-TICKER-', text_color='black', size=(6, None), background_color='white', enable_events=True),
-             sg.Button('Search', key='-SEARCH-', button_color=('white', 'green'))]
+             sg.Button('Search', key='-SEARCH-', button_color=('white', 'green'))
+             ]
         ], background_color=dark_theme_bg)
-
+   
         # Middle Left Frame
         self.middle_left_frame = sg.Column([[sg.Multiline(size=(60, 20), key='-INFO-', background_color=dark_theme_bg, text_color=dark_theme_fg, auto_refresh=True, disabled=True, no_scrollbar=True)]], background_color=dark_theme_bg)
 
@@ -40,24 +41,32 @@ class StockInfoApp:
         self.layout = [
             [sg.Text('Stock Information', font=('Helvetica', 16), text_color='white', background_color=dark_theme_bg)],
             [self.ticker_frame],
+            [sg.Input("",key='Input1',visible=False)],
+            [sg.Input("",key='Input2',visible=False)],
             [sg.Column([[self.middle_left_frame, self.finviz_frame, self.placeholder_frame]], element_justification='stretch')],
             [self.earnings_frame]
        ]
 
         window_location = (0, 0)
         self.window = sg.Window('Stock Information', self.layout, grab_anywhere=True, finalize=True, location=window_location)
-
+        self.window['Input1'].bind("<Return>", "_Enter")
+        self.window['Input1'].bind("<\>", "_Focus")
         # Hotkey to focus on the ticker input box
-        self.window.bind('<Control-Shift-d>', '+Ctrl+Shift+d')
+        self.window.bind('<\>', '_Focus')
+        self.window.bind("<Return>", "_Enter")
 
     def run(self):
         while True:
+            
             event, values = self.window.read()
+            
             if event == sg.WINDOW_CLOSED:
                 break
-            elif event == '-SEARCH-':
+            elif event == '-SEARCH-' or event =="_Enter":
                 ticker = values['-TICKER-'].upper()
                 self.show_stock_info(ticker)
+            elif event == '_Focus':
+                self.window['-TICKER-'].set_focus(True)
 
         self.window.close()
 
