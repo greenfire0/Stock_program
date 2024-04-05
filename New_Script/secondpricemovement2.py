@@ -125,43 +125,6 @@ news_text.tag_configure("hyperlink", foreground="deep sky blue", underline=1)
 news_text.tag_bind("hyperlink", "<Button-1>", open_link)
 
 
-def fetch_data_based_on_option():
-    # Get the selected option
-    selected_option = earnings_var.get()
-
-    # Get the ticker
-    ticker = ticker_entry.get().strip().upper()
-
-    # Get the start and end dates
-    start_date = start_date_entry.get_date().strftime('%Y-%m-%d')
-    end_date = end_date_entry.get_date().strftime('%Y-%m-%d')
-
-    # Get selected market session
-    session = session_var.get()
-
-    # Define your API key
-    api_key = "4Jq5Ew8tmnwkv_Q8CMEvNGnwAqJp2AzX"
-
-    # Define the parameters for the API request
-    multiplier = "5"  # 5-minute bars
-    timespan = "minute"  # Time span for the bars
-
-    earnings_data = get_earnings_data(ticker)
-    if earnings_data:
-        filtered_dfs = []
-        for earnings_date, next_day, *rest in earnings_data:
-            # Construct start and end dates for filtering
-            start_date = earnings_date
-            end_date = next_day
-
-    
-
-    # Display earnings data
-    earnings_text.delete(1.0, tk.END)
-    if earnings_data:
-        for data in earnings_data:
-            earnings_date, next_day, low, high, estimated_eps, actual_eps, *rest = data
-            earnings_text.insert(tk.END, f"Earnings data for {earnings_date}: Low - {low}, High - {high}, Estimated EPS - {estimated_eps}, Actual EPS - {actual_eps}\n")
 
 
 def search_stock(event=None):
@@ -235,10 +198,14 @@ def search_stock(event=None):
 
     earnings_text.delete(1.0, tk.END)
     earnings_data = get_earnings_data(ticker)
-    if earnings_data:
-        for data in earnings_data:
-            earnings_date,  low, high, estimated_eps, actual_eps, *rest = data
-            earnings_text.insert(tk.END, f"Earnings data for {earnings_date}: Low - {low}, High - {high}, Estimated EPS - {estimated_eps}, Actual EPS - {actual_eps}\n")
+    
+    if earnings_var.get() == "Earnings":
+        if earnings_data:
+            for data in earnings_data:
+                earnings_date,  low, high, estimated_eps, actual_eps, *rest = data
+                result_text.insert(tk.END, f"Earnings data for {earnings_date}: Low - {low}, High - {high}, Estimated EPS - {estimated_eps}, Actual EPS - {actual_eps}\n")
+    else:
+        result_text.insert(tk.END, df.to_string())
 
 def clear():
     result_text.delete(1.0, tk.END)
